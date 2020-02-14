@@ -119,6 +119,24 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-compile-mr</id>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <compileSourceRoots>
+                                <compileSourceRoot>${generated.sources.dir}/META-INF/versions/9</compileSourceRoot>
+                            </compileSourceRoots>
+                            <outputDirectory>${project.build.outputDirectory}/META-INF/versions/9</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <executions>
                     <execution>
@@ -171,6 +189,12 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
+                <executions>
+                <execution>
+                <id>bundle-manifest</id>
+                <goals>
+                    <goal>bundle</goal>
+                </goals>
                 <configuration>
                     <excludeDependencies>jaxws-eclipselink-plugin,sdo-eclipselink-plugin</excludeDependencies>
                     <instructions>
@@ -287,11 +311,141 @@
                             org.glassfish.hk2.osgiresourcelocator
                         </DynamicImport-Package>
                         <probe-provider-class-names>com.sun.xml.ws.transport.http.servlet.JAXWSRIDeploymentProbeProvider,com.sun.xml.ws.transport.http.servlet.JAXWSRIServletProbeProvider</probe-provider-class-names>
+                        <Multi-Release>true</Multi-Release>
                     </instructions>
                     <unpackBundle>true</unpackBundle>
                 </configuration>
-            </plugin>
-            <plugin>
+                </execution>
+                <execution>
+                <id>bundle-supplemental-manifest</id>
+                <goals>
+                    <goal>bundle</goal>
+                </goals>
+                <configuration>
+                    <excludeDependencies>jaxws-eclipselink-plugin,sdo-eclipselink-plugin</excludeDependencies>
+                    <manifestLocation>${project.build.directory}/generated-sources/resources/META-INF/versions/9/OSGI-INF</manifestLocation>
+                    <instructions>
+                        <_removeheaders>Include-Resource,Private-Package,Tool</_removeheaders>
+                        <Export-Package>
+                            com.oracle.webservices.*;version=${jaxws.osgiVersion},
+                            com.oracle.xmlns.webservices.jaxws_databinding;version=${jaxws.osgiVersion},
+                            com.sun.istack.ws.*;version=${jaxb.osgiVersion},
+                            com.sun.istack.localization;version=${jaxb.osgiVersion};uses:="com.sun.xml.ws.resources,com.sun.tools.ws.resources",
+                            com.sun.tools.ws.*;version=${jaxws.osgiVersion},
+                            com.sun.wsit.security.*;version=${metro.osgiVersion},
+                            com.sun.xml.messaging.saaj.*;version=${saaj-impl.osgiVersion},
+                            com.sun.xml.registry.*;version=1.0,
+                            com.sun.xml.rpc.plugins;version=${metro.osgiVersion},
+                            com.sun.xml.rpc.security;version=${metro.osgiVersion},
+                            com.sun.xml.rpc.*;version=${jaxrpc-impl.osgiVersion},
+                            com.sun.xml.security.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.api.config.management;version=${jaxws.osgiVersion},
+                            com.sun.xml.ws.api.config.management.policy;version=${jaxws.osgiVersion},
+                            com.sun.xml.ws.api.config.management.jmx;version=${metro.osgiVersion},
+                            com.sun.xml.ws.api.security.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.api.transport.tcp.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.api.tx.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.assembler.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.commons.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.config.management.policy.*;version=${jaxws.osgiVersion},
+                            com.sun.xml.ws.config.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.metro.api.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.policy.config.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.policy.impl.bindings.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.policy.jaxws.*;version=${jaxws.osgiVersion},
+                            com.sun.xml.ws.policy.jcaps.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.policy.localization.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.policy.parser.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.runtime.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.rx.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.security.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.transport.tcp.*;version=${metro.osgiVersion},
+                            com.sun.xml.ws.*;version=${jaxws.osgiVersion},
+                            com.sun.xml.wss.*;version=${metro.osgiVersion},
+                            org.jvnet.ws.databinding.*;version=${jaxws.osgiVersion},
+                            org.jvnet.ws.message.*;version=${jaxws.osgiVersion},
+                            org.jvnet.ws.*;version=${jaxws.osgiVersion},
+                            org.apache.jcp.xml.dsig.*;version=${santuario.version},
+                            org.apache.xml.security;version=${santuario.version},
+                            org.apache.xml.security.*;version=${santuario.version}
+                        </Export-Package>
+                        <Import-Package>
+                            javax.activation;version=!,
+                            javax.xml.crypto;version=!,
+                            javax.xml.crypto.dom;version=!,
+                            javax.xml.crypto.dsig;version=!,
+                            javax.xml.crypto.dsig.dom;version=!,
+                            javax.xml.crypto.dsig.keyinfo;version=!,
+                            javax.xml.crypto.dsig.spec;version=!,
+                            com.ibm.security.util;resolution:=optional,
+                            com.ibm.security.x509;resolution:=optional,
+                            com.sun.istack.*;version=${jaxb.osgiVersion},
+                            com.sun.security.auth.callback;resolution:=optional,
+                            sun.security.action;resolution:=optional,
+                            sun.security.jgss;resolution:=optional,
+                            sun.security.jgss.spi;resolution:=optional,
+                            sun.security.krb5;resolution:=optional,
+                            sun.security.krb5.internal.crypto;resolution:=optional,
+                            sun.security.util;resolution:=optional,
+                            sun.security.x509;resolution:=optional,
+                            com.sun.security.jgss;resolution:=optional,
+                            com.sun.enterprise.web.*;resolution:=optional,
+                            org.glassfish.webservice;resolution:=optional,
+                            org.glassfish.webservice.monitoring;resolution:=optional,
+                            com.sun.mail.util;resolution:=optional,
+                            com.sun.org.apache.xalan.internal.*;resolution:=optional,
+                            com.sun.org.apache.xml.internal.*;resolution:=optional,
+                            com.sun.org.apache.xerces.internal.*;resolution:=optional,
+                            com.sun.xml.bind.api.impl;resolution:=optional,
+                            com.sun.xml.bind.serializer;resolution:=optional,
+                            com.sun.xml.bind.validator;resolution:=optional,
+                            com.sun.xml.rpc.*;resolution:=optional,
+                            com.sun.xml.ws.spi.runtime;resolution:=optional,
+                            javax.ejb;resolution:=optional;version=3.0,
+                            javax.jws;version=2.0,
+                            javax.jws.soap;version=2.0,
+                            javax.xml.soap.*;version=${saaj-api.osgiVersion},
+                            javax.xml.ws.*;version=${jaxws-api.osgiVersion},
+                            javax.xml.bind.*;version=${jaxb-api.osgiVersion},
+                            org.apache.coyote;resolution:=optional,
+                            org.apache.tomcat.util.buf;resolution:=optional,
+                            org.iso_relax.verifier.impl;resolution:=optional,
+                            org.jvnet.mimepull;resolution:=optional,
+                            org.relaxng.datatype;resolution:=optional,
+                            org.relaxng.datatype.helpers;resolution:=optional,
+                            org.apache.xml.dtm;resolution:=optional,
+                            org.apache.xml.utils;resolution:=optional,
+                            org.apache.xpath;resolution:=optional,
+                            org.apache.xpath.compiler;resolution:=optional,
+                            org.apache.xpath.functions;resolution:=optional,
+                            org.apache.xpath.objects;resolution:=optional,
+                            org.w3c.dom;resolution:=optional,
+                            org.xml.sax;resolution:=optional,
+                            org.apache.log;resolution:=optional,
+                            org.apache.log4j;resolution:=optional,
+                            org.apache.avalon.framework.logger;resolution:=optional,
+                            *
+                        </Import-Package>
+                        <Private-Package>
+                            com.sun.xml.stream.*,
+                            com.sun.xml.xwss.*;version=${metro.osgiVersion},
+                            com.sun.xml.util.*;version=${metro.osgiVersion};include="XMLCipherAdapter",
+                            javanet.staxutils.*,
+                            org.apache.commons.logging,
+                            org.apache.commons.logging.impl,
+                        </Private-Package>
+                        <DynamicImport-Package>
+                            org.glassfish.flashlight.provider,
+                            org.glassfish.hk2.osgiresourcelocator
+                        </DynamicImport-Package>
+                        <probe-provider-class-names>com.sun.xml.ws.transport.http.servlet.JAXWSRIDeploymentProbeProvider,com.sun.xml.ws.transport.http.servlet.JAXWSRIServletProbeProvider</probe-provider-class-names>
+                        <Multi-Release>true</Multi-Release>
+                    </instructions>
+                </configuration>
+                </execution>
+                </executions>
+                </plugin>
+                <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
@@ -444,3 +598,4 @@
         <mf.dir>${project.build.outputDirectory}</mf.dir>
     </properties>
 </project>
+
