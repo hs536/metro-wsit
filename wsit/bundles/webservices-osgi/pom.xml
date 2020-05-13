@@ -39,7 +39,7 @@
                         </goals>
                         <configuration>
                             <excludeTransitive>true</excludeTransitive>
-                            <includes>META-INF/services/*, META-INF/metro-default.xml, META-INF/jaxrpc/*</includes>
+                            <includes>META-INF/services/*, META-INF/metro-default.xml, META-INF/jaxrpc/*, META-INF/versions/9/*</includes>
                             <excludes>META-INF/services/com.sun.xml.ws.spi.db.*, META-INF/services/com.sun.tools.*, META-INF/services/javax.xml.bind.*, META-INF/services/javax.xml.stream.*, META-INF/services/javax.mail.*, META-INF/services/org.*</excludes>
                             <outputDirectory>${project.build.directory}/generated-sources/resources</outputDirectory>
                         </configuration>
@@ -112,6 +112,24 @@
                             <sources>
                                 <source>${generated.sources.dir}</source>
                             </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-compile-mr</id>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <compileSourceRoots>
+                                <compileSourceRoot>${generated.sources.dir}/META-INF/versions/9</compileSourceRoot>
+                            </compileSourceRoots>
+                            <outputDirectory>${project.build.outputDirectory}/META-INF/versions/9</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -271,6 +289,7 @@
                             org.apache.log;resolution:=optional,
                             org.apache.log4j;resolution:=optional,
                             org.apache.avalon.framework.logger;resolution:=optional,
+                            javax.xml.catalog,
                             *
                         </Import-Package>
                         <Private-Package>
@@ -286,6 +305,7 @@
                             org.glassfish.hk2.osgiresourcelocator
                         </DynamicImport-Package>
                         <probe-provider-class-names>com.sun.xml.ws.transport.http.servlet.JAXWSRIDeploymentProbeProvider,com.sun.xml.ws.transport.http.servlet.JAXWSRIServletProbeProvider</probe-provider-class-names>
+                    <Multi-Release>true</Multi-Release>
                     </instructions>
                     <unpackBundle>true</unpackBundle>
                 </configuration>
